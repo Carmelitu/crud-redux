@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
-import Products from "./components/Productos";
+import Products from "./components/Products";
 import NewOrEditProduct from "./components/NewOrEditProduct";
 import { Provider } from "react-redux";
 import store from "./store";

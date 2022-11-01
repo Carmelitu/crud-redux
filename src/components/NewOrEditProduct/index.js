@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import { createNewProduct } from '../../actions/product';
 
-const NewOrEditProduct = ({ isOnEditMode }) => {
+const NewOrEditProduct = ({ isOnEditMode, history }) => {
     const [name, setName] = useState('');
     const [price, setPrice] = useState(0);
+
     const dispatch = useDispatch();
+    const productsState = useSelector(state => state.products);
+    const navigate = useNavigate();
 
     const addProduct = product => dispatch(createNewProduct(product))
 
@@ -17,6 +21,7 @@ const NewOrEditProduct = ({ isOnEditMode }) => {
         }
 
         addProduct({ name, price });
+        navigate("/");
     }
     
     return (
@@ -57,6 +62,8 @@ const NewOrEditProduct = ({ isOnEditMode }) => {
                                 {isOnEditMode ? "Save changes" : "Add product"}
                             </button>
                         </form>
+                        {productsState.loading ? <p>Loading...</p> : null}
+                        {productsState.error ? <p className='alert alert-danger p2 text-center'>An error ocurred.</p> : null}
                     </div>
                 </div>
             </div>
