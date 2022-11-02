@@ -6,7 +6,13 @@ import {
   ADD_PRODUCT_OK,
   GET_PRODUCTS_STARTED,
   GET_PRODUCTS_OK,
-  GET_PRODUCTS_ERROR
+  GET_PRODUCTS_ERROR,
+  DELETE_PRODUCT,
+  DELETE_PRODUCT_OK,
+  DELETE_PRODUCT_ERROR,
+  EDIT_PRODUCT,
+  EDIT_PRODUCT_OK,
+  EDIT_PRODUCT_ERROR
 } from "../../types";
 
 const addProduct = () => ({
@@ -66,3 +72,59 @@ const fetchProductsOK = (products) => ({
 const fetchProductsError = () => ({
   type: GET_PRODUCTS_ERROR
 })
+
+export const deleteProduct = (id) => {
+  return async (dispatch) => {
+    dispatch(dispatchDeleteProduct())
+    try {
+      await axiosClient.delete(`/products/${id}`);
+      dispatch(dispatchDeleteProductOK(id));
+    } catch (error) {
+      console.log(error);
+      dispatch(dispatchDeleteProductError());
+    }
+  }
+}
+
+const dispatchDeleteProduct = () => ({
+  type: DELETE_PRODUCT
+})
+
+const dispatchDeleteProductOK = (id) => ({
+    type: DELETE_PRODUCT_OK,
+    payload: id,
+});
+
+const dispatchDeleteProductError = (id) => ({
+    type: DELETE_PRODUCT_ERROR,
+    payload: true,
+});
+
+export const editProduct = (product) => {
+  return async (dispatch) => {
+    dispatch(dispatchEditProduct(product));
+
+    try {
+      console.log(product)
+      await axiosClient.put(`/products/${product.id}`, product);
+      dispatch(dispatchEditProductOK(product));
+    } catch (error) {
+      console.log(error)
+      dispatch(dispatchEditProductError());
+    }
+  }
+}
+
+const dispatchEditProduct = () => ({
+  type: EDIT_PRODUCT
+})
+
+const dispatchEditProductOK = (product) => ({
+  type: EDIT_PRODUCT_OK,
+  payload: product
+});
+
+const dispatchEditProductError = () => ({
+  type: EDIT_PRODUCT_ERROR,
+  payload: true
+});

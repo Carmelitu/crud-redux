@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-import { createNewProduct } from '../../actions/product';
+import { createNewProduct, editProduct } from '../../actions/product';
 
-const NewOrEditProduct = ({ isOnEditMode, history }) => {
+const NewOrEditProduct = ({ isOnEditMode }) => {
     const [name, setName] = useState('');
     const [price, setPrice] = useState(0);
+    const [id, setId] = useState(
+        +window.location.pathname.replace("/products/edit/", "") || null
+    );
 
     const dispatch = useDispatch();
     const productsState = useSelector(state => state.products);
     const navigate = useNavigate();
 
-    const addProduct = product => dispatch(createNewProduct(product))
+    const addProduct = product => dispatch(createNewProduct(product));
+    const updateProduct = product => dispatch(editProduct(product));
 
     const submitNewProduct = (e) => {
         e.preventDefault();
@@ -23,6 +27,27 @@ const NewOrEditProduct = ({ isOnEditMode, history }) => {
         addProduct({ name, price });
         navigate("/");
     }
+
+    const submitEditProduct = (e) => {
+        e.preventDefault();
+
+        if (name.trim() === "" || price <= 0) {
+            return;
+        }
+
+        updateProduct({ name, price, id });
+        navigate("/");
+    }
+
+    useEffect(() => {
+        if (isOnEditMode) {
+            const product = productsState.products.find((p) => p.id === id);
+            if (product) {
+                setName(product.name);
+                setPrice(product.price);
+            }
+        }
+    }, [])
     
     return (
         <div className="row justify-content-center">
@@ -32,7 +57,7 @@ const NewOrEditProduct = ({ isOnEditMode, history }) => {
                         <h2 className="text-center mb-4 font-weight-bold">
                             {isOnEditMode ? "Edit product" : "Add new product"}
                         </h2>
-                        <form onSubmit={submitNewProduct}>
+                        <form onSubmit={isOnEditMode ? submitEditProduct : submitNewProduct}>
                             <div className="form-group">
                                 <label>Product name</label>
                                 <input
